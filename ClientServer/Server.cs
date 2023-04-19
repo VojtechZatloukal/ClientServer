@@ -52,14 +52,17 @@ namespace ClientServer
             try
             {
                 // Create listener on localhost port 8052. 			
-                tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 8052);
+                tcpListener = new TcpListener(IPAddress.Parse("172.30.0.1"), 8052);
                 tcpListener.Start();
                 Console.WriteLine("Server is listening");
                 Byte[] bytes = new Byte[1024];
                 while (true)
                 {
+              
+                    
                     using (connectedTcpClient = tcpListener.AcceptTcpClient())
                     {
+                       
                         // Get a stream object for reading 					
                         using (NetworkStream stream = connectedTcpClient.GetStream())
                         {
