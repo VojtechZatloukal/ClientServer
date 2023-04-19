@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 
-namespace ClientServer
+namespace Client
 {
-    public class Client
+    public class ClientApp
     {
         #region private members 	
         private TcpClient socketConnection;
@@ -21,12 +21,7 @@ namespace ClientServer
             ConnectToTcpServer();
         }
         // Update is called once per frame
-        public void Update()
-        {
-
-            SendMessage();
-
-        }
+      
         /// <summary> 	
         /// Setup socket connection. 	
         /// </summary> 	
@@ -78,7 +73,7 @@ namespace ClientServer
         /// <summary> 	
         /// Send message to server using socket connection. 	
         /// </summary> 	
-        private void SendMessage()
+        public void SendMessage(string message)
         {
             if (socketConnection == null)
             {
@@ -90,9 +85,9 @@ namespace ClientServer
                 NetworkStream stream = socketConnection.GetStream();
                 if (stream.CanWrite)
                 {
-                    string clientMessage = "Prdel";
+                 
                     // Convert string message to byte array.                 
-                    byte[] clientMessageAsByteArray = Encoding.ASCII.GetBytes(clientMessage);
+                    byte[] clientMessageAsByteArray = Encoding.ASCII.GetBytes(message);
                     // Write byte array to socketConnection stream.                 
                     stream.Write(clientMessageAsByteArray, 0, clientMessageAsByteArray.Length);
                     Console.WriteLine("Client sent his message - should be received by server");
