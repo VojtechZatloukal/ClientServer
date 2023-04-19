@@ -16,20 +16,26 @@ namespace Client
         private Thread clientReceiveThread;
         #endregion
         // Use this for initialization 	
-        public void Start()
+        public void Start(string serverIP, int serverPort)
         {
-            ConnectToTcpServer();
+            ConnectToTcpServer(serverIP, serverPort);
         }
-        // Update is called once per frame
-      
+
+        public void Update()
+        {
+            SendMessage();
+        }
         /// <summary> 	
         /// Setup socket connection. 	
         /// </summary> 	
-        private void ConnectToTcpServer()
+        private void ConnectToTcpServer(string serverIP, int serverPort)
         {
             try
             {
-                clientReceiveThread = new Thread(new ThreadStart(ListenForData));
+                clientReceiveThread = new Thread(new ThreadStart(() =>
+                {
+                    ListenForData(serverIP, serverPort);
+                }));
                 clientReceiveThread.IsBackground = true;
                 clientReceiveThread.Start();
             }
@@ -41,11 +47,12 @@ namespace Client
         /// <summary> 	
         /// Runs in background clientReceiveThread; Listens for incomming data. 	
         /// </summary>     
-        private void ListenForData()
+        private void ListenForData(string serverIP, int serverPort)
         {
             try
             {
-                socketConnection = new TcpClient("172.30.0.1", 8052);
+                Debug.WriteLine($"Connecting to {serverIP}:{serverPort}");
+                socketConnection = new TcpClient(serverIP, serverPort);
                 Byte[] bytes = new Byte[1024];
                 while (true)
                 {
@@ -73,7 +80,7 @@ namespace Client
         /// <summary> 	
         /// Send message to server using socket connection. 	
         /// </summary> 	
-        public void SendMessage(string message)
+        private void SendMessage()
         {
             if (socketConnection == null)
             {
@@ -85,9 +92,12 @@ namespace Client
                 NetworkStream stream = socketConnection.GetStream();
                 if (stream.CanWrite)
                 {
-                 
+
+                    Console.Write("Message:");
+                    string clientMessage = Console.ReadLine() ?? "";
+
                     // Convert string message to byte array.                 
-                    byte[] clientMessageAsByteArray = Encoding.ASCII.GetBytes(message);
+                    byte[] clientMessageAsByteArray = Encoding.ASCII.GetBytes(clientMessage);
                     // Write byte array to socketConnection stream.                 
                     stream.Write(clientMessageAsByteArray, 0, clientMessageAsByteArray.Length);
                     Console.WriteLine("Client sent his message - should be received by server");
